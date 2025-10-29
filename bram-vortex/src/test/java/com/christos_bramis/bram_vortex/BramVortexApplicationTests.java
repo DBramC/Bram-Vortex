@@ -1,4 +1,4 @@
-package java.com.christos_bramis.bram_vortex;
+package com.christos_bramis.bram_vortex;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

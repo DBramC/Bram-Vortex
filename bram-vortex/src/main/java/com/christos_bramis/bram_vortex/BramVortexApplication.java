@@ -1,4 +1,4 @@
-package main.java.com.christos_bramis.bram_vortex;
+package com.christos_bramis.bram_vortex;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
