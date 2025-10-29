@@ -3,6 +3,7 @@ bram-vortex/target/
 bram-vortex/.mvn/wrapper/maven-wrapper.jar
 bram-vortex/src/main/**/target/
 bram-vortex/src/test/**/target/
+/out
 
 ### STS ###
 .apt_generated
