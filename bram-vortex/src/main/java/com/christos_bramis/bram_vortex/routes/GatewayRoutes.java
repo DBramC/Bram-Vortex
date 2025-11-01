@@ -10,6 +10,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Configuration
 public class GatewayRoutes {
 
@@ -31,8 +33,9 @@ public class GatewayRoutes {
                 .uri(fullUri)
                 .headers(headers -> headers.addAll(request.headers().asHttpHeaders()))
                 .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(body -> ServerResponse.ok().bodyValue(body));
+                .bodyToMono(Map.class)   // The JSON from the microservice becomes a Map
+                .flatMap(jsonMap -> ServerResponse.ok()
+                        .bodyValue(jsonMap));
     }
 
 
