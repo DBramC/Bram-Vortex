@@ -1,0 +1,19 @@
+ingressController:
+  enabled: true
+  installCRDs: false
+
+env:
+  database: "off"
+
+proxy:
+  type: LoadBalancer
+  http:
+    servicePort: 80
+    containerPort: 8000
+  tls:
+    servicePort: 443
+    containerPort: 8443
+
+admin:
+  enabled: true
+  type: ClusterIP # Δεν το βγάζουμε έξω για ασφάλεια (το βλέπεις με port-forward)

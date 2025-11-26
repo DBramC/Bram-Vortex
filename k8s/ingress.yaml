@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bram-vortex-ingress
+  namespace: default  # every service will be default for developing purposes
+  annotations:
+
+    kubernetes.io/ingress.class: kong
+
+
+    konghq.com/strip-path: "false"
+
+    # Προαιρετικά: Αναγκαστικό HTTPS redirect (αν το θες αργότερα)
+    # konghq.com/https-redirect: "true"
+
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          # Κανόνας: Όλα τα requests πάνε στο Auth Service
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bram-vortex-auth-svc # Το όνομα του Service στο service.yaml
+                port:
+                  number: 80 # Η πόρτα που δήλωσες στο service.yaml
