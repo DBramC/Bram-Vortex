@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bram-vortex-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/strip-path: "false"
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          # 1. Frontend Root Path (/)
+          # Το Frontend παίρνει το βασικό route για να φορτώνει το UI
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bram-vortex-frontend-svc
+                port:
+                  number: 80
+
+          # 2. Auth Service Routes
+          # Χρειαζόμαστε το Auth Service προσβάσιμο για το Login flow
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: bram-vortex-auth-svc
+                port:
+                  number: 80
+
+          # 3. Auth Callback Route
+          # Εδώ επιστρέφει το GitHub, πρέπει να το πιάσει το Auth Service
+          - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: bram-vortex-auth-svc
+                port:
+                  number: 80
