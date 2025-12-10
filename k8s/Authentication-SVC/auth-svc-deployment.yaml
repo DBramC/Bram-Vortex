@@ -24,6 +24,8 @@ spec:
             - containerPort: 8080
               protocol: TCP
           env:
+            - name: APP_FRONTEND_URL
+              value: "http://localhost"
             - name: GITHUB_CLIENT_ID
               valueFrom:
                 secretKeyRef:
