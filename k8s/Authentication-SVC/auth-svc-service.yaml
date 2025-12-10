@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bram-vortex-auth-svc # Το όνομα που θα χρησιμοποιείς στο Kong/Postman
+  namespace: default
+spec:
+  selector:
+    app: bram-vortex-auth
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

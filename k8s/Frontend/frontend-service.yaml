@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bram-vortex-frontend-svc
+  namespace: default
+spec:
+  selector:
+    app: bram-vortex-frontend
+  ports:
+    - protocol: TCP
+      port: 80       # Η πόρτα που βλέπει το Kong
+      targetPort: 80 # Η πόρτα του Container
+  type: ClusterIP

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bram-vortex-auth
+  namespace: default
+  labels:
+    app: bram-vortex-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bram-vortex-auth
+  template:
+    metadata:
+      labels:
+        app: bram-vortex-auth
+    spec:
+      serviceAccountName: vault-serviceaccount
+      containers:
+        - name: auth-service
+          image: christosbramis/bram-vortex-auth:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-k8s-secret
+                  key: client-id
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth-k8s-secret
+                  key: client-secret
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "vault-oauth-provider"

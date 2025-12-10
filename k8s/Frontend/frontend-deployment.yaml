@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bram-vortex-frontend
+  namespace: default
+  labels:
+    app: bram-vortex-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bram-vortex-frontend
+  template:
+    metadata:
+      labels:
+        app: bram-vortex-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: christosbramis/bram-vortex-frontend:1.0 # Θα το χτίσεις εσύ
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80 # Το Nginx ακούει στην 80

@@ -23,7 +23,17 @@ spec:
 
           # 2. Auth Service Routes
           # Χρειαζόμαστε το Auth Service προσβάσιμο για το Login flow
-          - path: /
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: bram-vortex-auth-svc
+                port:
+                  number: 80
+
+          # 3. Auth Service - Callback από GitHub (ΑΥΤΟ ΕΛΕΙΠΕ)
+          # Το GitHub επιστρέφει εδώ. Πρέπει να πάει στο Backend για να ολοκληρωθεί το login.
+          - path: /login/oauth2/code
             pathType: Prefix
             backend:
               service:
