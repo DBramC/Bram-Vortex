@@ -1,0 +1,57 @@
+name: Reusable GitOps Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        required: true
+        type: string
+      manifest_path:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      PAT_TOKEN:
+        required: true
+
+jobs:
+  build-push-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout App Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ inputs.image_name }}:${{ github.sha }}
+
+      - name: Update Kubernetes Manifest
+        run: |
+          git config --global user.email "gitops-bot@bram-vortex.com"
+          git config --global user.name "GitOps Bot"
+          # Προσοχή: Εδώ βεβαιώσου ότι το URL είναι σωστό
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/DBramC/Bram-Vortex.git config-repo
+          cd config-repo
+          # Αντικατάσταση του image tag
+          sed -i "s|image: ${{ inputs.image_name }}:.*|image: ${{ inputs.image_name }}:${{ github.sha }}|" ${{ inputs.manifest_path }}
+          
+          if [[ -n $(git status -s) ]]; then
+            git add ${{ inputs.manifest_path }}
+            git commit -m "🚀 Deploy ${{ inputs.image_name }}:${{ github.sha }}"
+            git push
+            echo "✅ Updated manifest successfully."
+          else
+            echo "⚠️ No changes detected."
+          fi
