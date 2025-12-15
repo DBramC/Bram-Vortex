@@ -18,7 +18,7 @@ spec:
       serviceAccountName: vault-serviceaccount
       containers:
         - name: auth-service
-          image: christosbramis/bram-vortex-auth:7cb2f28e57de34b598c68c334bf4d9e682da641b
+          image: christosbramis/bram-vortex-auth:7e10c3d020dd256d689e67f378996221361b9248
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
