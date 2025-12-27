@@ -50,17 +50,3 @@ spec:
             limits:
               memory: "768Mi"
               cpu: "1000m"
-
-          # Health Checks
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
-            initialDelaySeconds: 40
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 20
-            periodSeconds: 10
