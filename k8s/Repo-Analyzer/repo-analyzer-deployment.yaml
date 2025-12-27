@@ -15,6 +15,7 @@ spec:
       labels:
         app: bram-vortex-repo-analyzer
     spec:
+      # Συνδέουμε το Pod με τη νέα ταυτότητα
       serviceAccountName: repo-analyzer-sa
 
       containers:
@@ -26,8 +27,8 @@ spec:
             - containerPort: 8080
               protocol: TCP
 
+          # --- Environment Variables ---
           env:
-            # Το μόνο που χρειάζεσαι πλέον
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
 
