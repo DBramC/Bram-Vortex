@@ -43,6 +43,8 @@ spec:
             limits:
               memory: "768Mi"
               cpu: "1000m"
+
+          # Health Checks
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
