@@ -36,8 +36,8 @@ jobs:
           context: .
           push: true
           tags: |
-            christosbramis/bram-vortex-frontend:${{ github.sha }}
-            christosbramis/bram-vortex-frontend:latest  <-- ΠΡΟΣΘΕΣΕ ΑΥΤΟ
+            ${{ inputs.image_name }}:${{ github.sha }}
+            ${{ inputs.image_name }}:latest
 
       - name: Update Kubernetes Manifest
         run: |
