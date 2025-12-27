@@ -42,6 +42,12 @@ spec:
             - name: SPRING_CLOUD_VAULT_KUBERNETES_ROLE
               value: "repo-analyzer-role"
 
+            - name: SPRING_AI_GOOGLE_GENAI_PROJECT_ID
+              value: "gen-lang-client-0370792653"
+
+            - name: SPRING_AI_GOOGLE_GENAI_LOCATION
+              value: "us-central1"
+
           # Resources (Προσαρμοσμένα για Java + AI processing)
           resources:
             requests:
