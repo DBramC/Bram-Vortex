@@ -15,24 +15,27 @@ spec:
       labels:
         app: bram-vortex-repo-analyzer
     spec:
-      # Συνδέουμε το Pod με τη νέα ταυτότητα
       serviceAccountName: repo-analyzer-sa
-
       containers:
         - name: repo-analyzer
-          # ΠΡΟΣΟΧΗ: Εδώ θα μπει το ΝΕΟ image που θα χτίσεις
           image: christosbramis/bram-vortex-repo-analyzer:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP
-
-          # --- Environment Variables ---
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
-
-          # Resources
+            - name: SPRING_CLOUD_VAULT_URI
+              value: "http://vault.vault.svc.cluster.local:8200"
+            - name: SPRING_CLOUD_VAULT_AUTHENTICATION
+              value: "KUBERNETES"
+            - name: SPRING_CLOUD_VAULT_KUBERNETES_ROLE
+              value: "repo-analyzer-role"
+            - name: SPRING_AI_GOOGLE_GENAI_PROJECT_ID
+              value: "gen-lang-client-0370792653"
+            - name: SPRING_AI_GOOGLE_GENAI_LOCATION
+              value: "us-central1"
           resources:
             requests:
               memory: "256Mi"
@@ -40,8 +43,6 @@ spec:
             limits:
               memory: "768Mi"
               cpu: "1000m"
-
-          # Health Checks
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
