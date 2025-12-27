@@ -20,7 +20,7 @@ spec:
 
       containers:
         - name: repo-analyzer
-          image: christosbramis/bram-vortex-repo-analyzer:ba9997327bd43d3bcc0c5af6b6ddb156e28eb741
+          image: christosbramis/bram-vortex-repo-analyzer:e35a26dc3f698606cae3f7911cedfef96c5f9ac3
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
