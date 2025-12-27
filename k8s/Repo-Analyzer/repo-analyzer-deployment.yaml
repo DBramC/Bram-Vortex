@@ -31,6 +31,9 @@ spec:
             - name: SPRING_CLOUD_VAULT_AUTHENTICATION
               value: "KUBERNETES"
 
+            - name: SPRING_CLOUD_VAULT_KV_DEFAULT_CONTEXT
+              value: "bram-vortex-repo-analyzer"
+
             - name: SPRING_CLOUD_VAULT_KUBERNETES_ROLE
               value: "repo-analyzer-role"
 
