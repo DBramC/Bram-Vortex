@@ -40,7 +40,15 @@ spec:
                 port:
                   number: 80
 
-          - path: /dashboard
+          - path: /dashboard/repos
+            pathType: Prefix
+            backend:
+              service:
+                name: repo-analyzer-svc
+                port:
+                  number: 80
+
+          - path: /dashboard/analyze
             pathType: Prefix
             backend:
               service:
