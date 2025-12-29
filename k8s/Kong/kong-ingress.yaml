@@ -11,7 +11,6 @@ spec:
   rules:
     - http:
         paths:
-#          # 1. Frontend Root Path (/)                   Uncomment when you are ready to deploy, Done for Dev Purposes
 #          # Το Frontend παίρνει το βασικό route για να φορτώνει το UI
           - path: /
             pathType: Prefix
@@ -38,5 +37,13 @@ spec:
             backend:
               service:
                 name: bram-vortex-auth-svc
+                port:
+                  number: 80
+
+          - path: /dashboard
+            pathType: Prefix
+            backend:
+              service:
+                name: repo-analyzer-svc
                 port:
                   number: 80
