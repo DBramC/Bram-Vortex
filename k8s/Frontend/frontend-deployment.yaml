@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: christosbramis/bram-vortex-frontend:1dca66d831e8b95a71a6b126566427c57373062e
+          image: christosbramis/bram-vortex-frontend:23cc462ad246451a0ab34faf97486ffc3b37605c
           imagePullPolicy: Always
           ports:
             - containerPort: 80 # Το Nginx ακούει στην 80
