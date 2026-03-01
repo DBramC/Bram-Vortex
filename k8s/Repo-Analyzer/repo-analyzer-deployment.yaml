@@ -15,6 +15,7 @@ spec:
       labels:
         app: bram-vortex-repo-analyzer
     spec:
+      # Χρήση του εξουσιοδοτημένου Service Account
       serviceAccountName: vault-serviceaccount
       containers:
         - name: repo-analyzer
@@ -23,9 +24,11 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            # Ρυθμίσεις Βάσης Δεδομένων
+            # Endpoint Βάσης Δεδομένων
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres-svc:5432/vortexdb"
+
+            # Credentials Βάσης από το CSI Bundle
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -37,14 +40,14 @@ spec:
                   name: analyzer-secrets-bundle
                   key: db-pass
 
-            # Google AI API Key
+            # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: analyzer-secrets-bundle
                   key: google-api-key
 
-            # JPA/Hibernate Properties
+            # JPA Settings
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_JPA_DATABASE_PLATFORM
@@ -54,14 +57,6 @@ spec:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
-
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1024Mi"
-              cpu: "1000m"
 
       volumes:
         - name: secrets-store-inline
