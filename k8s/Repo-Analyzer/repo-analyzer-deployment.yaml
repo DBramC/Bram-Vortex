@@ -15,7 +15,8 @@ spec:
       labels:
         app: bram-vortex-repo-analyzer
     spec:
-      serviceAccountName: repo-analyzer-sa
+      # Για να έχει πρόσβαση στο Vault, πρέπει να χρησιμοποιεί το SA του Vault (ή το δικό του SA αν το έχεις κάνει bind στο Vault)
+      serviceAccountName: vault-serviceaccount
       containers:
         - name: repo-analyzer
           image: christosbramis/bram-vortex-repo-analyzer:d3fadc24f95b5ace7d5755c5fe70ff62a21215e7
@@ -23,6 +24,29 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-svc:5432/vortexdb"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-vault-secret # Αλλαγή εδώ
+                  key: postgres-user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-vault-secret # Αλλαγή εδώ
+                  key: postgres-password
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+
+          # Mount το Vault CSI
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
 
           resources:
             requests:
@@ -31,3 +55,12 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "1000m"
+
+      # Προσθήκη του Volume
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "vault-postgres-provider"
