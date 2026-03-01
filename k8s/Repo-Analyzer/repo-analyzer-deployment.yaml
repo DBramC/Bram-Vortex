@@ -15,34 +15,39 @@ spec:
       labels:
         app: bram-vortex-repo-analyzer
     spec:
-      # Για να έχει πρόσβαση στο Vault, πρέπει να χρησιμοποιεί το SA του Vault (ή το δικό του SA αν το έχεις κάνει bind στο Vault)
+      # Χρησιμοποιούμε το SA που είναι ήδη authorized στο Vault
       serviceAccountName: vault-serviceaccount
       containers:
         - name: repo-analyzer
-          image: christosbramis/bram-vortex-repo-analyzer:647a377bb1fc13de7b2be11568de4ce89f7e9786
+          image: christosbramis/bram-vortex-repo-analyzer:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP
           env:
+            # Σύνδεση με τη βάση μέσω του Service name
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres-svc:5432/vortexdb"
+
+            # Credentials από το Secret που παράγει ο Vault CSI Driver
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: postgres-vault-secret # Αλλαγή εδώ
+                  name: postgres-vault-secret
                   key: postgres-user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-vault-secret # Αλλαγή εδώ
+                  name: postgres-vault-secret
                   key: postgres-password
+
+            # Hibernate Settings
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_JPA_DATABASE_PLATFORM
               value: "org.hibernate.dialect.PostgreSQLDialect"
 
-          # Mount το Vault CSI
+          # Mount το Vault CSI για να δημιουργηθεί το K8s Secret
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
@@ -50,13 +55,12 @@ spec:
 
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: "512Mi"
+              cpu: "500m"
             limits:
               memory: "1024Mi"
               cpu: "1000m"
 
-      # Προσθήκη του Volume
       volumes:
         - name: secrets-store-inline
           csi:
