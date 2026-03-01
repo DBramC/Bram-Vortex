@@ -15,7 +15,6 @@ spec:
       labels:
         app: bram-vortex-repo-analyzer
     spec:
-      # Χρησιμοποιούμε το SA που είναι ήδη authorized στο Vault
       serviceAccountName: vault-serviceaccount
       containers:
         - name: repo-analyzer
@@ -23,31 +22,34 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-              protocol: TCP
           env:
-            # Σύνδεση με τη βάση μέσω του Service name
+            # Ρυθμίσεις Βάσης Δεδομένων
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres-svc:5432/vortexdb"
-
-            # Credentials από το Secret που παράγει ο Vault CSI Driver
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: postgres-vault-secret
-                  key: postgres-user
+                  name: analyzer-secrets-bundle
+                  key: db-user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-vault-secret
-                  key: postgres-password
+                  name: analyzer-secrets-bundle
+                  key: db-pass
 
-            # Hibernate Settings
+            # Google AI API Key
+            - name: SPRING_AI_GOOGLE_GENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: analyzer-secrets-bundle
+                  key: google-api-key
+
+            # JPA/Hibernate Properties
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_JPA_DATABASE_PLATFORM
               value: "org.hibernate.dialect.PostgreSQLDialect"
 
-          # Mount το Vault CSI για να δημιουργηθεί το K8s Secret
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
@@ -67,4 +69,4 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "vault-postgres-provider"
+              secretProviderClass: "analyzer-vault-provider"
