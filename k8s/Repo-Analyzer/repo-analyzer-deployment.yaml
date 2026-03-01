@@ -19,7 +19,7 @@ spec:
       serviceAccountName: vault-serviceaccount
       containers:
         - name: repo-analyzer
-          image: christosbramis/bram-vortex-repo-analyzer:latest
+          image: christosbramis/bram-vortex-repo-analyzer:89349840081505851a6a17d0a023a732f84dfa0a
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
