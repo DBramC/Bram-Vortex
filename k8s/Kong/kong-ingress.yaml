@@ -55,3 +55,11 @@ spec:
                 name: repo-analyzer-svc
                 port:
                   number: 80
+
+          - path: /dashboard/jobs
+            pathType: Prefix
+            backend:
+              service:
+                name: repo-analyzer-svc
+                port:
+                  number: 80
