@@ -16,7 +16,7 @@ spec:
         app: bram-vortex-repo-analyzer
     spec:
       # Χρήση του εξουσιοδοτημένου Service Account
-      serviceAccountName: vault-serviceaccount
+      serviceAccountName: repo-analyzer-sa
       containers:
         - name: repo-analyzer
           image: christosbramis/bram-vortex-repo-analyzer:c8ecd6352b617e44b2a41b1a6c9593b53dd32e71
