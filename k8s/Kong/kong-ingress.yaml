@@ -5,13 +5,13 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: kong
-    konghq.com/strip-path: "false"
+    konghq.com/strip-path: "false" # Απαραίτητο για να λαμβάνει ο Controller ολόκληρο το path
 spec:
   ingressClassName: kong
   rules:
     - http:
         paths:
-#          # Το Frontend παίρνει το βασικό route για να φορτώνει το UI
+          # 1. Frontend Route
           - path: /
             pathType: Prefix
             backend:
@@ -21,7 +21,6 @@ spec:
                   number: 80
 
           # 2. Auth Service Routes
-          # Χρειαζόμαστε το Auth Service προσβάσιμο για το Login flow
           - path: /oauth2
             pathType: Prefix
             backend:
@@ -30,8 +29,7 @@ spec:
                 port:
                   number: 80
 
-          # 3. Auth Service - Callback από GitHub (ΑΥΤΟ ΕΛΕΙΠΕ)
-          # Το GitHub επιστρέφει εδώ. Πρέπει να πάει στο Backend για να ολοκληρωθεί το login.
+          # 3. GitHub OAuth Callback
           - path: /login/oauth2/code
             pathType: Prefix
             backend:
@@ -40,6 +38,7 @@ spec:
                 port:
                   number: 80
 
+          # 4. Repo Analyzer Routes
           - path: /dashboard/repos
             pathType: Prefix
             backend:
@@ -47,7 +46,6 @@ spec:
                 name: repo-analyzer-svc
                 port:
                   number: 80
-
           - path: /dashboard/analyze
             pathType: Prefix
             backend:
@@ -55,11 +53,26 @@ spec:
                 name: repo-analyzer-svc
                 port:
                   number: 80
-
           - path: /dashboard/jobs
             pathType: Prefix
             backend:
               service:
                 name: repo-analyzer-svc
+                port:
+                  number: 80
+
+          # 5. Terraform Generator - ΜΟΝΟ Δημόσια Endpoints (Αυστηρή Λύση)
+          - path: /terraform/status
+            pathType: Prefix
+            backend:
+              service:
+                name: terraform-generator-svc # Το όνομα από το service.yaml
+                port:
+                  number: 80 # Η πόρτα του service
+          - path: /terraform/download
+            pathType: Prefix
+            backend:
+              service:
+                name: terraform-generator-svc
                 port:
                   number: 80
