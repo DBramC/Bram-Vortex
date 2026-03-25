@@ -19,7 +19,7 @@ spec:
       serviceAccountName: repo-analyzer-sa
       containers:
         - name: repo-analyzer
-          image: christosbramis/bram-vortex-repo-analyzer:d223404fe6581dae67eee324906d7cc2fc9852bd
+          image: christosbramis/bram-vortex-repo-analyzer:80c7d5b5ab9fd70e1be0f0be3139ba3353fbafbb
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
