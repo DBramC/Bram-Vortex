@@ -32,19 +32,19 @@ spec:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: analyzer-secrets-bundle
+                  name: terraform-secrets-bundle
                   key: db-user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: analyzer-secrets-bundle
+                  name: terraform-secrets-bundle
                   key: db-pass
 
             # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: analyzer-secrets-bundle
+                  name: terraform-secrets-bundle
                   key: google-api-key
 
             # JPA Settings
