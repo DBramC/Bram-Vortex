@@ -33,12 +33,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: terraform-secrets-bundle
-                  key: db-user
+                  key: db-reader-user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: terraform-secrets-bundle
-                  key: db-pass
+                  key: db-reader-pass
 
             # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
