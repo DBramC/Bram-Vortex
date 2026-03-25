@@ -33,12 +33,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: ansible-secrets-bundle
-                  key: as-user
+                  key: as_user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: ansible-secrets-bundle
-                  key: as-pass
+                  key: as_pass
 
             # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY

@@ -33,12 +33,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: analyzer-secrets-bundle
-                  key: an-user
+                  key: an_user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: analyzer-secrets-bundle
-                  key: an-pass
+                  key: an_pass
 
             # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
