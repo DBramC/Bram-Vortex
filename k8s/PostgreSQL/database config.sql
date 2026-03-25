@@ -30,8 +30,8 @@ DO $$
     END $$;
 
 -- Βασική σύνδεση στη βάση για όλους
-GRANT CONNECT ON DATABASE vortexdb TO ra_user, tf_user, as_user, pp_user, ex_user;
-GRANT USAGE ON SCHEMA public TO ra_user, tf_user, as_user, pp_user, ex_user;
+GRANT CONNECT ON DATABASE vortexdb TO an_user, tf_user, as_user, pp_user, ex_user;
+GRANT USAGE ON SCHEMA public TO an_user, tf_user, as_user, pp_user, ex_user;
 
 -- =========================================================
 -- 2. ΔΗΜΙΟΥΡΓΙΑ ΠΙΝΑΚΩΝ (Schema Definition)
@@ -75,9 +75,9 @@ CREATE TABLE IF NOT EXISTS ansible_jobs (
 -- 3. ΑΠΟΔΟΣΗ ΔΙΚΑΙΩΜΑΤΩΝ (Isolation & Least Privilege)
 -- =========================================================
 
--- --- REPO ANALYZER (ra_user) ---
+-- --- REPO ANALYZER (an_user) ---
 -- Πλήρη πρόσβαση στο Analysis, καμία στους Generators
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analysis_jobs TO ra_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analysis_jobs TO an_user;
 
 -- --- TERRAFORM GENERATOR (tf_user) ---
 -- Ανάγνωση του Blueprint, εγγραφή ΜΟΝΟ στον δικό του πίνακα
@@ -94,7 +94,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE ansible_jobs TO as_user;
 GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs TO pp_user, ex_user;
 
 -- Δικαιώματα σε Sequences (χρειάζεται για auto-increment IDs αν προστεθούν)
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ra_user, tf_user, as_user;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO an_user, tf_user, as_user;
 
 -- =========================================================
 -- 4. SECURITY CHECK
