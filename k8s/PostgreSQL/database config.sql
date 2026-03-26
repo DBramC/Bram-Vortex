@@ -101,3 +101,12 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO an_user, tf_user, as_us
 -- =========================================================
 -- Αφαιρούμε τη δυνατότητα στον "public" ρόλο να δημιουργεί πίνακες
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+
+-- Για τον Terraform Generator
+ALTER TABLE terraform_jobs OWNER TO tf_user;
+
+-- Για τον Repo Analyzer (αν χρειαστεί)
+ALTER TABLE analysis_jobs OWNER TO an_user;
+
+-- Για τον Ansible Generator (προληπτικά)
+ALTER TABLE ansible_jobs OWNER TO as_user;
