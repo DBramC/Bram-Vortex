@@ -15,7 +15,7 @@ spec:
       labels:
         app: bram-vortex-auth
     spec:
-      serviceAccountName: vault-serviceaccount
+      serviceAccountName: oauth-sa
       containers:
         - name: auth-service
           image: christosbramis/bram-vortex-auth:9ea6cabcf85e511cd43dd26e8a6ae9aaea2e1473
