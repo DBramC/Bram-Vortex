@@ -15,7 +15,7 @@ spec:
         app: bram-vortex-postgres
     spec:
       # ΠΡΟΣΟΧΗ: Βάζουμε το service account που έχει δικαίωμα να μιλάει στο Vault!
-      serviceAccountName: vault-serviceaccount
+      serviceAccountName: postgres-sa
       containers:
         - name: postgres
           image: postgres:15-alpine
