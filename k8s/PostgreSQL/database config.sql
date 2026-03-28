@@ -5,7 +5,7 @@ DO $$
     BEGIN
         -- Repo Analyzer (Ο "Δημιουργός" του Blueprint)
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'an_user') THEN
-            CREATE USER ra_user WITH PASSWORD 'an_vortex_2026';
+            CREATE USER an_user WITH PASSWORD 'an_vortex_2026';
         END IF;
 
         -- Terraform Generator (Infrastructure Creator)
