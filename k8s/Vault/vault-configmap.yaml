@@ -15,13 +15,22 @@ data:
     vault secrets enable -path=secret kv || true
     vault secrets enable transit || true
 
-    # 2. TRANSIT KEY (Για JWT Verify/Sign αν χρειαστεί)
+    # 2. TRANSIT KEY
     vault write -f transit/keys/jwt-signing-key type=rsa-2048 || true
 
-    # 3. POLICIES (Ακριβώς όπως τα διαβάσαμε από το shell σου)
+    # 3. POLICIES (Με τη σωστή logic users/+/+/*)
     
     vault policy write ai-key-policy - <<EOF
     path "secret/ai_key" { capabilities = ["read"] }
+    EOF
+
+    # SSH & JOB MANAGEMENT POLICY
+    # Προστατεύει το secret/users/DBramC/apiKey 
+    # Επιτρέπει το secret/users/DBramC/Akinita/job-123/...
+    vault policy write ssh-mgmt-policy - <<EOF
+    path "secret/users/+/+/*" { 
+      capabilities = ["create", "read", "update", "delete", "list"] 
+    }
     EOF
 
     vault policy write ansible-policy - <<EOF
@@ -32,16 +41,14 @@ data:
     path "secret/bram_vortex_db/execution" { capabilities = ["read"] }
     EOF
 
+    # Admin policy για το OAuth Service (Write GitHub Tokens)
     vault policy write github-token-admin-policy - <<EOF
     path "secret/users/*" { capabilities = ["create", "read", "update", "delete", "list"] }
     EOF
 
+    # Read-only policy για τον Analyzer
     vault policy write github-token-policy - <<EOF
     path "secret/users/*" { capabilities = ["read"] }
-    EOF
-
-    vault policy write job-policy - <<EOF
-    path "secret/users/+/jobs/+" { capabilities = ["create", "update", "read", "list"] }
     EOF
 
     vault policy write jwt-policy - <<EOF
@@ -69,44 +76,44 @@ data:
     vault write auth/kubernetes/config \
         kubernetes_host="https://kubernetes.default.svc" || true
 
-    # 5. ROLES MAPPING (Με διορθωμένα Policies & SA Names)
+    # 5. ROLES MAPPING
 
-    # Terraform: Χρειάζεται DB, AI Key, JWT Verify και Job Keys (Create)
+    # Terraform Role: Πρόσβαση στο νέο ssh-mgmt-policy
     vault write auth/kubernetes/role/terraform-generator-role \
         bound_service_account_names=terraform-sa \
         bound_service_account_namespaces=default \
-        policies="terraform-policy,ai-key-policy,jwt-policy,job-policy" \
+        policies="terraform-policy,ai-key-policy,jwt-policy,ssh-mgmt-policy" \
         token_ttl=24h
 
-    # Ansible: Χρειάζεται DB, AI Key, JWT Verify και Job Keys (Read)
+    # Ansible Role: Πρόσβαση στο νέο ssh-mgmt-policy (για να διαβάσει το κλειδί)
     vault write auth/kubernetes/role/ansible-generator-role \
         bound_service_account_names=ansible-sa \
         bound_service_account_namespaces=default \
-        policies="ansible-policy,ai-key-policy,jwt-policy,job-policy" \
+        policies="ansible-policy,ai-key-policy,jwt-policy,ssh-mgmt-policy" \
         token_ttl=24h
 
-    # Repo Analyzer: Χρειάζεται DB, AI Key και GitHub Tokens
+    # Repo Analyzer Role
     vault write auth/kubernetes/role/repo-analyzer-role \
         bound_service_account_names=repo-analyzer-sa \
         bound_service_account_namespaces=default \
         policies="repo-analyzer-policy,github-token-policy,ai-key-policy" \
         token_ttl=24h
 
-    # OAuth Service: Διαχειρίζεται τα Tokens των χρηστών
+    # OAuth Role
     vault write auth/kubernetes/role/oauth-role \
         bound_service_account_names=oauth-sa \
         bound_service_account_namespaces=default \
         policies="github-token-admin-policy,oauth-policy,jwt-policy" \
         token_ttl=24h
 
-    # Postgres Initializer: Για το Database Setup
-    vault write auth/kubernetes/role/postgres-role \
-        bound_service_account_names=vault-serviceaccount \
+    # Execution Role (Για το τελικό Deployment)
+    vault write auth/kubernetes/role/execution-role \
+        bound_service_account_names=execution-sa \
         bound_service_account_namespaces=default \
-        policies="postgres-policy" \
+        policies="execution-policy,ssh-mgmt-policy,jwt-policy" \
         token_ttl=24h
 
-    echo "✅ Vault Rebuild Completed Successfully!"
+    echo "✅ Vault Security Schema 2026 Rebuilt Successfully!"
 
 ---
 apiVersion: batch/v1
@@ -125,7 +132,7 @@ spec:
             - name: VAULT_ADDR
               value: "http://vault.vault.svc.cluster.local:8200"
             - name: VAULT_TOKEN
-              value: "root" # Το root token σου
+              value: "root"
           command: ["/bin/sh", "/scripts/setup.sh"]
           volumeMounts:
             - name: scripts
