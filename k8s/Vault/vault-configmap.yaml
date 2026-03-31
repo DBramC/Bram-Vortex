@@ -18,29 +18,47 @@ data:
     # 2. TRANSIT KEY (Για JWT Sign/Verify)
     vault write -f transit/keys/jwt-signing-key type=rsa-2048 || true
 
-    # 3. POLICIES (KV V1 Paths)
+    # 3. POLICIES (Συγχρονισμένα με το UI και τον Κώδικα)
     
     # AI Key Policy
     vault policy write ai-key-policy - <<EOF
     path "secret/ai_key" { capabilities = ["read"] }
     EOF
 
-    # SSH & JOB MANAGEMENT (Η "καρδιά" του προβλήματος 403)
-    # Επιτρέπει: secret/users/userId/repoName/jobId/...
-    # Προστατεύει: secret/users/userId/apiKey
-    vault policy write ssh-mgmt-policy - <<EOF
+    # SSH Security Policy (Προστασία API Key στο root)
+    # Επιτρέπει πρόσβαση στο βάθος: users/userId/repoName/jobId/...
+    vault policy write secret-ssh-policy - <<EOF
     path "secret/users/+/+/*" { 
       capabilities = ["create", "read", "update", "delete", "list"] 
     }
     EOF
 
-    # Database & Service Specific Policies
+    # Job Management Policy
+    vault policy write job-policy - <<EOF
+    path "secret/users/+/jobs/+" { 
+      capabilities = ["create", "update", "read", "list"] 
+    }
+    EOF
+
+    # Database & Infrastructure Policies
     vault policy write ansible-policy - <<EOF
     path "secret/bram_vortex_db/ansible" { capabilities = ["read"] }
     EOF
 
-    vault policy write execution-policy - <<EOF
-    path "secret/bram_vortex_db/execution" { capabilities = ["read"] }
+    vault policy write terraform-policy - <<EOF
+    path "secret/bram_vortex_db/terraform" { capabilities = ["read"] }
+    EOF
+
+    vault policy write repo-analyzer-policy - <<EOF
+    path "secret/bram_vortex_db/analyzer" { capabilities = ["read"] }
+    EOF
+
+    vault policy write postgres-policy - <<EOF
+    path "secret/bram_vortex_db/database" { capabilities = ["read"] }
+    EOF
+
+    vault policy write oauth-policy - <<EOF
+    path "secret/bram_vortex_oauth" { capabilities = ["read"] }
     EOF
 
     vault policy write github-token-admin-policy - <<EOF
@@ -55,20 +73,8 @@ data:
     path "transit/keys/jwt-signing-key" { capabilities = ["read"] }
     EOF
 
-    vault policy write oauth-policy - <<EOF
-    path "secret/bram_vortex_oauth" { capabilities = ["read"] }
-    EOF
-
-    vault policy write postgres-policy - <<EOF
-    path "secret/bram_vortex_db/database" { capabilities = ["read"] }
-    EOF
-
-    vault policy write repo-analyzer-policy - <<EOF
-    path "secret/bram_vortex_db/analyzer" { capabilities = ["read"] }
-    EOF
-
-    vault policy write terraform-policy - <<EOF
-    path "secret/bram_vortex_db/terraform" { capabilities = ["read"] }
+    vault policy write execution-policy - <<EOF
+    path "secret/bram_vortex_db/execution" { capabilities = ["read"] }
     EOF
 
     # 4. KUBERNETES AUTH CONFIGURATION
@@ -77,20 +83,20 @@ data:
         kubernetes_host="https://kubernetes.default.svc" \
         issuer="https://kubernetes.default.svc.cluster.local" || true
 
-    # 5. ROLES MAPPING (Σύνδεση Service Accounts με Policies)
+    # 5. ROLES MAPPING (Συγχρονισμένο με τα Service Accounts και το UI)
 
     # Terraform Generator Role
     vault write auth/kubernetes/role/terraform-generator-role \
         bound_service_account_names=terraform-sa \
         bound_service_account_namespaces=default \
-        policies="terraform-policy,ai-key-policy,jwt-policy,ssh-mgmt-policy" \
+        policies="terraform-policy,ai-key-policy,jwt-policy,job-policy,secret-ssh-policy" \
         token_ttl=24h
 
     # Ansible Generator Role
     vault write auth/kubernetes/role/ansible-generator-role \
         bound_service_account_names=ansible-sa \
         bound_service_account_namespaces=default \
-        policies="ansible-policy,ai-key-policy,jwt-policy,ssh-mgmt-policy" \
+        policies="ansible-policy,ai-key-policy,jwt-policy,secret-ssh-policy" \
         token_ttl=24h
 
     # Repo Analyzer Role
@@ -107,21 +113,21 @@ data:
         policies="github-token-admin-policy,oauth-policy,jwt-policy" \
         token_ttl=24h
 
-    # Postgres / Database Initializer Role
+    # Postgres Role
     vault write auth/kubernetes/role/postgres-role \
-        bound_service_account_names=vault-serviceaccount \
+        bound_service_account_names=postgres-sa \
         bound_service_account_namespaces=default \
         policies="postgres-policy" \
         token_ttl=24h
 
-    # Execution Service Role (Deployer)
+    # Execution Service Role
     vault write auth/kubernetes/role/execution-role \
         bound_service_account_names=execution-sa \
         bound_service_account_namespaces=default \
-        policies="execution-policy,ssh-mgmt-policy,jwt-policy" \
+        policies="execution-policy,secret-ssh-policy,jwt-policy" \
         token_ttl=24h
 
-    echo "✅ Vault Rebuild Completed Successfully for KV V1!"
+    echo "✅ Vault Rebuild Completed Successfully!"
 
 ---
 apiVersion: batch/v1
