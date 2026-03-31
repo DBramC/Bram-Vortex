@@ -9,30 +9,32 @@ data:
     set -e
     export VAULT_ADDR="http://localhost:8200"
 
-    echo "⚙️ Initializing Bram Vortex Final Security Schema..."
+    echo "⚙️ Initializing Bram Vortex Security Schema (KV V1 Mode)..."
 
-    # 1. ENGINES SETUP (KV1 & Transit)
-    vault secrets enable -path=secret kv || true
+    # 1. ENGINES SETUP (Ρητά Version 1)
+    vault secrets enable -path=secret -version=1 kv || true
     vault secrets enable transit || true
 
-    # 2. TRANSIT KEY
+    # 2. TRANSIT KEY (Για JWT Sign/Verify)
     vault write -f transit/keys/jwt-signing-key type=rsa-2048 || true
 
-    # 3. POLICIES (Με τη σωστή logic users/+/+/*)
+    # 3. POLICIES (KV V1 Paths)
     
+    # AI Key Policy
     vault policy write ai-key-policy - <<EOF
     path "secret/ai_key" { capabilities = ["read"] }
     EOF
 
-    # SSH & JOB MANAGEMENT POLICY
-    # Προστατεύει το secret/users/DBramC/apiKey 
-    # Επιτρέπει το secret/users/DBramC/Akinita/job-123/...
+    # SSH & JOB MANAGEMENT (Η "καρδιά" του προβλήματος 403)
+    # Επιτρέπει: secret/users/userId/repoName/jobId/...
+    # Προστατεύει: secret/users/userId/apiKey
     vault policy write ssh-mgmt-policy - <<EOF
     path "secret/users/+/+/*" { 
       capabilities = ["create", "read", "update", "delete", "list"] 
     }
     EOF
 
+    # Database & Service Specific Policies
     vault policy write ansible-policy - <<EOF
     path "secret/bram_vortex_db/ansible" { capabilities = ["read"] }
     EOF
@@ -41,12 +43,10 @@ data:
     path "secret/bram_vortex_db/execution" { capabilities = ["read"] }
     EOF
 
-    # Admin policy για το OAuth Service (Write GitHub Tokens)
     vault policy write github-token-admin-policy - <<EOF
     path "secret/users/*" { capabilities = ["create", "read", "update", "delete", "list"] }
     EOF
 
-    # Read-only policy για τον Analyzer
     vault policy write github-token-policy - <<EOF
     path "secret/users/*" { capabilities = ["read"] }
     EOF
@@ -74,18 +74,19 @@ data:
     # 4. KUBERNETES AUTH CONFIGURATION
     vault auth enable kubernetes || true
     vault write auth/kubernetes/config \
-        kubernetes_host="https://kubernetes.default.svc" || true
+        kubernetes_host="https://kubernetes.default.svc" \
+        issuer="https://kubernetes.default.svc.cluster.local" || true
 
-    # 5. ROLES MAPPING
+    # 5. ROLES MAPPING (Σύνδεση Service Accounts με Policies)
 
-    # Terraform Role: Πρόσβαση στο νέο ssh-mgmt-policy
+    # Terraform Generator Role
     vault write auth/kubernetes/role/terraform-generator-role \
         bound_service_account_names=terraform-sa \
         bound_service_account_namespaces=default \
         policies="terraform-policy,ai-key-policy,jwt-policy,ssh-mgmt-policy" \
         token_ttl=24h
 
-    # Ansible Role: Πρόσβαση στο νέο ssh-mgmt-policy (για να διαβάσει το κλειδί)
+    # Ansible Generator Role
     vault write auth/kubernetes/role/ansible-generator-role \
         bound_service_account_names=ansible-sa \
         bound_service_account_namespaces=default \
@@ -99,21 +100,28 @@ data:
         policies="repo-analyzer-policy,github-token-policy,ai-key-policy" \
         token_ttl=24h
 
-    # OAuth Role
+    # OAuth Service Role
     vault write auth/kubernetes/role/oauth-role \
         bound_service_account_names=oauth-sa \
         bound_service_account_namespaces=default \
         policies="github-token-admin-policy,oauth-policy,jwt-policy" \
         token_ttl=24h
 
-    # Execution Role (Για το τελικό Deployment)
+    # Postgres / Database Initializer Role
+    vault write auth/kubernetes/role/postgres-role \
+        bound_service_account_names=vault-serviceaccount \
+        bound_service_account_namespaces=default \
+        policies="postgres-policy" \
+        token_ttl=24h
+
+    # Execution Service Role (Deployer)
     vault write auth/kubernetes/role/execution-role \
         bound_service_account_names=execution-sa \
         bound_service_account_namespaces=default \
         policies="execution-policy,ssh-mgmt-policy,jwt-policy" \
         token_ttl=24h
 
-    echo "✅ Vault Security Schema 2026 Rebuilt Successfully!"
+    echo "✅ Vault Rebuild Completed Successfully for KV V1!"
 
 ---
 apiVersion: batch/v1
