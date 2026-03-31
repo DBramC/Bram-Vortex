@@ -76,3 +76,19 @@ spec:
                 name: terraform-generator-svc
                 port:
                   number: 80
+
+          # 6. Ansible Generator (ΑΥΤΟ ΕΛΕΙΠΕ!)
+          - path: /ansible/status
+            pathType: Prefix
+            backend:
+              service:
+                name: ansible-generator-svc
+                port:
+                  number: 80
+          - path: /ansible/download
+            pathType: Prefix
+            backend:
+              service:
+                name: ansible-generator-svc
+                port:
+                  number: 80
