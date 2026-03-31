@@ -18,35 +18,35 @@ data:
     # 2. TRANSIT KEY (Για JWT Sign/Verify)
     vault write -f transit/keys/jwt-signing-key type=rsa-2048 || true
 
-    # 3. POLICIES (Συγχρονισμένα με το UI και τον Κώδικα)
+    # 3. POLICIES
     
-    # AI Key Policy
     vault policy write ai-key-policy - <<EOF
     path "secret/ai_key" { capabilities = ["read"] }
     EOF
 
-    # SSH Security Policy (Προστασία API Key στο root)
-    # Επιτρέπει πρόσβαση στο βάθος: users/userId/repoName/jobId/...
     vault policy write secret-ssh-policy - <<EOF
     path "secret/users/+/+/*" { 
       capabilities = ["create", "read", "update", "delete", "list"] 
     }
     EOF
 
-    # Job Management Policy
     vault policy write job-policy - <<EOF
     path "secret/users/+/jobs/+" { 
       capabilities = ["create", "update", "read", "list"] 
     }
     EOF
 
-    # Database & Infrastructure Policies
     vault policy write ansible-policy - <<EOF
     path "secret/bram_vortex_db/ansible" { capabilities = ["read"] }
     EOF
 
     vault policy write terraform-policy - <<EOF
     path "secret/bram_vortex_db/terraform" { capabilities = ["read"] }
+    EOF
+
+    # --- ΝΕΟ: Pipeline Generator Policy ---
+    vault policy write pipeline-policy - <<EOF
+    path "secret/bram_vortex_db/pipeline" { capabilities = ["read"] }
     EOF
 
     vault policy write repo-analyzer-policy - <<EOF
@@ -83,44 +83,46 @@ data:
         kubernetes_host="https://kubernetes.default.svc" \
         issuer="https://kubernetes.default.svc.cluster.local" || true
 
-    # 5. ROLES MAPPING (Συγχρονισμένο με τα Service Accounts και το UI)
+    # 5. ROLES MAPPING
 
-    # Terraform Generator Role
     vault write auth/kubernetes/role/terraform-generator-role \
         bound_service_account_names=terraform-sa \
         bound_service_account_namespaces=default \
         policies="terraform-policy,ai-key-policy,jwt-policy,job-policy,secret-ssh-policy" \
         token_ttl=24h
 
-    # Ansible Generator Role
     vault write auth/kubernetes/role/ansible-generator-role \
         bound_service_account_names=ansible-sa \
         bound_service_account_namespaces=default \
         policies="ansible-policy,ai-key-policy,jwt-policy,secret-ssh-policy" \
         token_ttl=24h
 
-    # Repo Analyzer Role
+    # --- ΝΕΟ: Pipeline Generator Role ---
+    # Παρατήρησε ότι έχουμε προσθέσει και το github-token-policy!
+    vault write auth/kubernetes/role/pipeline-generator-role \
+        bound_service_account_names=pipeline-sa \
+        bound_service_account_namespaces=default \
+        policies="pipeline-policy,ai-key-policy,jwt-policy,job-policy,secret-ssh-policy,github-token-policy" \
+        token_ttl=24h
+
     vault write auth/kubernetes/role/repo-analyzer-role \
         bound_service_account_names=repo-analyzer-sa \
         bound_service_account_namespaces=default \
         policies="repo-analyzer-policy,github-token-policy,ai-key-policy" \
         token_ttl=24h
 
-    # OAuth Service Role
     vault write auth/kubernetes/role/oauth-role \
         bound_service_account_names=oauth-sa \
         bound_service_account_namespaces=default \
         policies="github-token-admin-policy,oauth-policy,jwt-policy" \
         token_ttl=24h
 
-    # Postgres Role
     vault write auth/kubernetes/role/postgres-role \
         bound_service_account_names=postgres-sa \
         bound_service_account_namespaces=default \
         policies="postgres-policy" \
         token_ttl=24h
 
-    # Execution Service Role
     vault write auth/kubernetes/role/execution-role \
         bound_service_account_names=execution-sa \
         bound_service_account_namespaces=default \
