@@ -38,7 +38,7 @@ spec:
                 port:
                   number: 80
 
-          # 4. Repo Analyzer Routes
+          # 4. Repo Analyzer Routes (ΕΔΩ ΕΓΙΝΕ Η ΠΡΟΣΘΗΚΗ)
           - path: /dashboard/repos
             pathType: Prefix
             backend:
@@ -60,15 +60,23 @@ spec:
                 name: repo-analyzer-svc
                 port:
                   number: 80
+          # --- Η κρίσιμη προσθήκη για το Download ---
+          - path: /dashboard/download
+            pathType: Prefix
+            backend:
+              service:
+                name: repo-analyzer-svc
+                port:
+                  number: 80
 
-          # 5. Terraform Generator - ΜΟΝΟ Δημόσια Endpoints (Αυστηρή Λύση)
+          # 5. Terraform Generator
           - path: /terraform/status
             pathType: Prefix
             backend:
               service:
-                name: terraform-generator-svc # Το όνομα από το service.yaml
+                name: terraform-generator-svc
                 port:
-                  number: 80 # Η πόρτα του service
+                  number: 80
           - path: /terraform/download
             pathType: Prefix
             backend:
@@ -77,7 +85,7 @@ spec:
                 port:
                   number: 80
 
-          # 6. Ansible Generator (ΑΥΤΟ ΕΛΕΙΠΕ!)
+          # 6. Ansible Generator
           - path: /ansible/status
             pathType: Prefix
             backend:
