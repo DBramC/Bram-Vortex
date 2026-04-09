@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS pipeline_jobs (
 -- --- REPO ANALYZER (an_user) ---
 -- Πλήρη πρόσβαση στο Analysis, καμία στους Generators
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analysis_jobs TO an_user;
+GRANT SELECT ON TABLE terraform_jobs, ansible_jobs, pipeline_jobs TO an_user;
 
 -- --- TERRAFORM GENERATOR (tf_user) ---
 -- Ανάγνωση του Blueprint, εγγραφή ΜΟΝΟ στον δικό του πίνακα
@@ -107,6 +108,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE pipeline_jobs TO pp_user;
 
 -- --- EXECUTION SERVICE (ex_user) ---
 -- Απόλυτο Read-Only σε όλα τα δεδομένα για συντονισμό και deployment
+GRANT SELECT ON TABLE analysis_jobs TO ex_user;
 GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO ex_user;
 
 -- Δικαιώματα σε Sequences (χρειάζεται για auto-increment IDs αν προστεθούν)
