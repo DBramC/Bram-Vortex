@@ -5,22 +5,44 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: kong
-    konghq.com/strip-path: "false" # Απαραίτητο για να λαμβάνει ο Controller ολόκληρο το path
+    # Διατηρούμε το strip-path false για να βλέπει η Java όλο το URL (/dashboard/...)
+    konghq.com/strip-path: "false"
 spec:
   ingressClassName: kong
   rules:
     - http:
         paths:
-          # 1. Frontend Route
-          - path: /
-            pathType: Prefix
+          # --- 1. REPO ANALYZER (Υψηλή Προτεραιότητα) ---
+          - path: /dashboard/download
+            pathType: ImplementationSpecific
             backend:
               service:
-                name: bram-vortex-frontend-svc
+                name: repo-analyzer-svc
+                port:
+                  number: 80
+          - path: /dashboard/jobs
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: repo-analyzer-svc
+                port:
+                  number: 80
+          - path: /dashboard/repos
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: repo-analyzer-svc
+                port:
+                  number: 80
+          - path: /dashboard/analyze
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: repo-analyzer-svc
                 port:
                   number: 80
 
-          # 2. Auth Service Routes
+          # --- 2. AUTH SERVICE ---
           - path: /oauth2
             pathType: Prefix
             backend:
@@ -28,8 +50,6 @@ spec:
                 name: bram-vortex-auth-svc
                 port:
                   number: 80
-
-          # 3. GitHub OAuth Callback
           - path: /login/oauth2/code
             pathType: Prefix
             backend:
@@ -38,45 +58,7 @@ spec:
                 port:
                   number: 80
 
-          # 4. Repo Analyzer Routes (ΕΔΩ ΕΓΙΝΕ Η ΠΡΟΣΘΗΚΗ)
-          - path: /dashboard/repos
-            pathType: Prefix
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-          - path: /dashboard/analyze
-            pathType: Prefix
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-          - path: /dashboard/jobs
-            pathType: Prefix
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-          # --- Η κρίσιμη προσθήκη για το Download ---
-          - path: /dashboard/download
-            pathType: Prefix
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-
-          # 5. Terraform Generator
-          - path: /terraform/status
-            pathType: Prefix
-            backend:
-              service:
-                name: terraform-generator-svc
-                port:
-                  number: 80
+          # --- 3. GENERATORS ---
           - path: /terraform/download
             pathType: Prefix
             backend:
@@ -84,8 +66,20 @@ spec:
                 name: terraform-generator-svc
                 port:
                   number: 80
-
-          # 6. Ansible Generator
+          - path: /ansible/download
+            pathType: Prefix
+            backend:
+              service:
+                name: ansible-generator-svc
+                port:
+                  number: 80
+          - path: /terraform/status
+            pathType: Prefix
+            backend:
+              service:
+                name: terraform-generator-svc
+                port:
+                  number: 80
           - path: /ansible/status
             pathType: Prefix
             backend:
@@ -93,10 +87,13 @@ spec:
                 name: ansible-generator-svc
                 port:
                   number: 80
-          - path: /ansible/download
+
+          # --- 4. FRONTEND (ΤΕΛΕΥΤΑΙΟ - Catch-all) ---
+          # Πρέπει να είναι στο τέλος για να μη "κλέβει" τα αιτήματα των API
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: ansible-generator-svc
+                name: bram-vortex-frontend-svc
                 port:
                   number: 80
