@@ -33,12 +33,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: pipeline-secrets-bundle
-                  key: as_user
+                  key: pp_user
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pipeline-secrets-bundle
-                  key: as_pass
+                  key: pp_pass
 
             # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
