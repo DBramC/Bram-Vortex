@@ -49,7 +49,10 @@ CREATE TABLE IF NOT EXISTS analysis_jobs (
                                              user_id VARCHAR(255),
                                              prompt_message TEXT,
                                              compute_type VARCHAR(255),
-                                             target_region VARCHAR(255)
+                                             target_region VARCHAR(255),
+                                             terraform_status VARCHAR(20) DEFAULT 'PENDING',
+                                             ansible_status VARCHAR(20) DEFAULT 'PENDING',
+                                             pipeline_status VARCHAR(20) DEFAULT 'PENDING'
 );
 
 -- Πίνακας: Terraform Jobs (Τα αποτελέσματα του TF Generator)
