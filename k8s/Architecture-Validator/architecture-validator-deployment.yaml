@@ -44,7 +44,7 @@ spec:
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ansible-secrets-bundle
+                  name: validator-secrets-bundle
                   key: google-api-key
 
             # JPA Settings
