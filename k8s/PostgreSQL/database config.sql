@@ -124,11 +124,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE pipeline_jobs TO pp_user;
 -- --- EXECUTION SERVICE (ex_user) ---
 -- Απόλυτο Read-Only σε όλα τα δεδομένα για συντονισμό και deployment
 GRANT SELECT ON TABLE analysis_jobs TO ex_user;
-GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs, validator_jobs TO ex_user;
+GRANT SELECT ON TABLE validator_jobs TO ex_user;
 
 -- --- ARCHITECTURE VALIDATOR (av_user) ---
 GRANT SELECT ON TABLE analysis_jobs TO av_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE validator_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO av_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE validator_jobs TO av_user;
 
 -- Δικαιώματα σε Sequences (χρειάζεται για auto-increment IDs αν προστεθούν)
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO an_user, tf_user, as_user, pp_user, ex_user, av_user;
