@@ -19,7 +19,7 @@ spec:
       serviceAccountName: validator-sa
       containers:
         - name: architecture-validator
-          image: christosbramis/bram-vortex-architecture-validator:b1c55b2e58ab04c0031d041f050f338ff9155bce
+          image: christosbramis/bram-vortex-architecture-validator:e82c3b813231b47f3e59383430ed3f260bf8a91d
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
