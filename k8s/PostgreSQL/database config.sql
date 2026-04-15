@@ -34,8 +34,8 @@ DO $$
     END $$;
 
 -- Βασική σύνδεση στη βάση για όλους
-GRANT CONNECT ON DATABASE vortexdb TO an_user, tf_user, as_user, pp_user, ex_user;
-GRANT USAGE ON SCHEMA public TO an_user, tf_user, as_user, pp_user, ex_user;
+GRANT CONNECT ON DATABASE vortexdb TO an_user, tf_user, as_user, pp_user, ex_user, av_user;
+GRANT USAGE ON SCHEMA public TO an_user, tf_user, as_user, pp_user, ex_user, av_user;
 
 -- =========================================================
 -- 2. ΔΗΜΙΟΥΡΓΙΑ ΠΙΝΑΚΩΝ (Schema Definition)
@@ -56,7 +56,9 @@ CREATE TABLE IF NOT EXISTS analysis_jobs (
                                              target_region VARCHAR(255),
                                              terraform_status VARCHAR(20) DEFAULT 'PENDING',
                                              ansible_status VARCHAR(20) DEFAULT 'PENDING',
-                                             pipeline_status VARCHAR(20) DEFAULT 'PENDING'
+                                             pipeline_status VARCHAR(20) DEFAULT 'PENDING',
+                                             validator_status VARCHAR(20) DEFAULT 'PENDING',
+                                             master_zip BYTEA
 );
 
 -- Πίνακας: Terraform Jobs (Τα αποτελέσματα του TF Generator)
@@ -86,7 +88,7 @@ CREATE TABLE IF NOT EXISTS pipeline_jobs (
                                              pipeline_zip BYTEA                 -- Binary storage για το ZIP
 );
 
--- Πίνακας: Validator Jobs (Το τελικό Master ZIP) -- ΝΕΟ!
+-- Πίνακας: Validator Jobs (Το τελικό Master ZIP)
 CREATE TABLE IF NOT EXISTS validator_jobs (
                                               id VARCHAR(255) PRIMARY KEY,
                                               analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
@@ -102,7 +104,7 @@ CREATE TABLE IF NOT EXISTS validator_jobs (
 -- --- REPO ANALYZER (an_user) ---
 -- Πλήρη πρόσβαση στο Analysis, καμία στους Generators
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE analysis_jobs TO an_user;
-GRANT SELECT ON TABLE terraform_jobs, ansible_jobs, pipeline_jobs TO an_user;
+GRANT SELECT ON TABLE terraform_jobs, ansible_jobs, pipeline_jobs, validator_jobs TO an_user;
 
 -- --- TERRAFORM GENERATOR (tf_user) ---
 -- Ανάγνωση του Blueprint, εγγραφή ΜΟΝΟ στον δικό του πίνακα
@@ -122,13 +124,14 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE pipeline_jobs TO pp_user;
 -- --- EXECUTION SERVICE (ex_user) ---
 -- Απόλυτο Read-Only σε όλα τα δεδομένα για συντονισμό και deployment
 GRANT SELECT ON TABLE analysis_jobs TO ex_user;
-GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO ex_user;
+GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs, validator_jobs TO ex_user;
 
+-- --- ARCHITECTURE VALIDATOR (av_user) ---
 GRANT SELECT ON TABLE analysis_jobs TO av_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE validator_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO av_user;
 
 -- Δικαιώματα σε Sequences (χρειάζεται για auto-increment IDs αν προστεθούν)
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO an_user, tf_user, as_user;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO an_user, tf_user, as_user, pp_user, ex_user, av_user;
 
 -- =========================================================
 -- 4. SECURITY CHECK
@@ -148,5 +151,5 @@ ALTER TABLE ansible_jobs OWNER TO as_user;
 -- Για τον Pipeline Generator
 ALTER TABLE pipeline_jobs OWNER TO pp_user;
 
--- Για τον Architecture Validator --
+-- Για τον Architecture Validator
 ALTER TABLE validator_jobs OWNER TO av_user;
