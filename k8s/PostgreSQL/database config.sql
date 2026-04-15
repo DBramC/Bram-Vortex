@@ -27,6 +27,10 @@ DO $$
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'ex_user') THEN
             CREATE USER ex_user WITH PASSWORD 'ex_vortex_2026';
         END IF;
+
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'av_user') THEN
+            CREATE USER av_user WITH PASSWORD 'av_vortex_2026';
+        END IF;
     END $$;
 
 -- Βασική σύνδεση στη βάση για όλους
@@ -82,6 +86,15 @@ CREATE TABLE IF NOT EXISTS pipeline_jobs (
                                              pipeline_zip BYTEA                 -- Binary storage για το ZIP
 );
 
+-- Πίνακας: Validator Jobs (Το τελικό Master ZIP) -- ΝΕΟ!
+CREATE TABLE IF NOT EXISTS validator_jobs (
+                                              id VARCHAR(255) PRIMARY KEY,
+                                              analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
+                                              user_id VARCHAR(255),
+                                              status VARCHAR(255),
+                                              master_zip BYTEA                   -- Εδώ αποθηκεύεται το τελικό, ελεγμένο ZIP
+);
+
 -- =========================================================
 -- 3. ΑΠΟΔΟΣΗ ΔΙΚΑΙΩΜΑΤΩΝ (Isolation & Least Privilege)
 -- =========================================================
@@ -111,6 +124,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE pipeline_jobs TO pp_user;
 GRANT SELECT ON TABLE analysis_jobs TO ex_user;
 GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO ex_user;
 
+GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO av_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE validator_jobs TO av_user;
+
 -- Δικαιώματα σε Sequences (χρειάζεται για auto-increment IDs αν προστεθούν)
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO an_user, tf_user, as_user;
 
@@ -131,3 +147,6 @@ ALTER TABLE ansible_jobs OWNER TO as_user;
 
 -- Για τον Pipeline Generator
 ALTER TABLE pipeline_jobs OWNER TO pp_user;
+
+-- Για τον Architecture Validator --
+ALTER TABLE validator_jobs OWNER TO av_user;
