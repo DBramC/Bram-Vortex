@@ -38,7 +38,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: validator-secrets-bundle
-                  key: va_pass
+                  key: av_pass
 
             # Gemini API Key από το CSI Bundle
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
