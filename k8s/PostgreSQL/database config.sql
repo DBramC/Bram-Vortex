@@ -124,7 +124,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE pipeline_jobs TO pp_user;
 GRANT SELECT ON TABLE analysis_jobs TO ex_user;
 GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO ex_user;
 
-GRANT SELECT ON TABLE analysis_jobs, terraform_jobs, ansible_jobs, pipeline_jobs TO av_user;
+GRANT SELECT ON TABLE analysis_jobs TO av_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE validator_jobs TO av_user;
 
 -- Δικαιώματα σε Sequences (χρειάζεται για auto-increment IDs αν προστεθούν)
