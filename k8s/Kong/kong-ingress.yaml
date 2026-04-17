@@ -12,30 +12,12 @@ spec:
   rules:
     - http:
         paths:
-          # --- 1. REPO ANALYZER (Υψηλή Προτεραιότητα) ---
-          - path: /dashboard/download
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-          - path: /dashboard/jobs
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-          - path: /dashboard/repos
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: repo-analyzer-svc
-                port:
-                  number: 80
-          - path: /dashboard/analyze
-            pathType: ImplementationSpecific
+          # --- 1. REPO ANALYZER (ORCHESTRATOR) ---
+          # Χρησιμοποιούμε το /dashboard ως Prefix.
+          # Πιάνει αυτόματα: /dashboard/repos, /dashboard/jobs,
+          # /dashboard/analysis, /dashboard/internal κλπ.
+          - path: /dashboard
+            pathType: Prefix
             backend:
               service:
                 name: repo-analyzer-svc
@@ -59,28 +41,15 @@ spec:
                   number: 80
 
           # --- 3. GENERATORS ---
-          - path: /terraform/download
+          # Ενοποιημένα paths για να πιάνουν /download και /status
+          - path: /terraform
             pathType: Prefix
             backend:
               service:
                 name: terraform-generator-svc
                 port:
                   number: 80
-          - path: /ansible/download
-            pathType: Prefix
-            backend:
-              service:
-                name: ansible-generator-svc
-                port:
-                  number: 80
-          - path: /terraform/status
-            pathType: Prefix
-            backend:
-              service:
-                name: terraform-generator-svc
-                port:
-                  number: 80
-          - path: /ansible/status
+          - path: /ansible
             pathType: Prefix
             backend:
               service:
@@ -88,8 +57,9 @@ spec:
                 port:
                   number: 80
 
-          # --- 4. FRONTEND (ΤΕΛΕΥΤΑΙΟ - Catch-all) ---
-          # Πρέπει να είναι στο τέλος για να μη "κλέβει" τα αιτήματα των API
+          # --- 4. FRONTEND (CATCH-ALL) ---
+          # ΠΡΟΣΟΧΗ: Πρέπει να είναι ΠΑΝΤΑ τελευταίο στη λίστα
+          # για να μη "κλέβει" τα αιτήματα που προορίζονται για τα API.
           - path: /
             pathType: Prefix
             backend:
