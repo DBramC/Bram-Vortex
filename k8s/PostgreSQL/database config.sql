@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS validator_jobs (
                                               analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
                                               user_id VARCHAR(255),
                                               status VARCHAR(255),
-                                              master_zip BYTEA                   -- Εδώ αποθηκεύεται το τελικό, ελεγμένο ZIP
+                                              validated_master_zip BYTEA                   -- Εδώ αποθηκεύεται το τελικό, ελεγμένο ZIP
 );
 
 -- =========================================================
