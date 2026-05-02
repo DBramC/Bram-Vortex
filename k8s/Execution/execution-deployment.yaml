@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bram-vortex-execution
+  namespace: default
+  labels:
+    app: bram-vortex-execution
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bram-vortex-execution
+  template:
+    metadata:
+      labels:
+        app: bram-vortex-execution
+    spec:
+      # Χρήση του εξουσιοδοτημένου Service Account
+      serviceAccountName: execution-sa
+      containers:
+        - name: execution
+          image: christosbramis/bram-vortex-execution:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            # Endpoint Βάσης Δεδομένων
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-svc:5432/vortexdb"
+
+            # Credentials Βάσης από το CSI Bundle
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: execution-secrets-bundle
+                  key: ex_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: execution-secrets-bundle
+                  key: ex_pass
+
+            # JPA Settings
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "execution-vault-provider"
