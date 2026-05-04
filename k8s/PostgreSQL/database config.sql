@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS analysis_jobs (
                                              created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
                                              repo_id BIGINT,
                                              repo_name VARCHAR(255),
+                                             repo_url VARCHAR(255),
                                              status VARCHAR(255),
                                              target_cloud VARCHAR(255),
                                              user_id VARCHAR(255),
