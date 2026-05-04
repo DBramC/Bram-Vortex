@@ -19,7 +19,7 @@ spec:
       serviceAccountName: execution-sa
       containers:
         - name: execution
-          image: christosbramis/bram-vortex-execution:bec32daac597f571917ac7e9714050d309ca82ff
+          image: christosbramis/bram-vortex-execution:73d317b65bb16155700d03a3c53d79e94a13f77d
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
