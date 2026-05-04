@@ -18,7 +18,7 @@ spec:
       serviceAccountName: oauth-sa
       containers:
         - name: auth-service
-          image: christosbramis/bram-vortex-auth:82b2699ba8a4929f7df75ea8b82a6d3c503fb516
+          image: christosbramis/bram-vortex-auth:9f3fbfe4712f0e7b8d8893e54facdc31d712b401
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
