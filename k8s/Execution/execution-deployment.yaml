@@ -39,6 +39,11 @@ spec:
                 secretKeyRef:
                   name: execution-secrets-bundle
                   key: ex_pass
+            - name: INFRACOST_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: execution-secrets-bundle
+                  key: INFRACOST_API_KEY
 
             # JPA Settings
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
