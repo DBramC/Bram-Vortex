@@ -45,6 +45,12 @@ spec:
                   name: execution-secrets-bundle
                   key: INFRACOST_API_KEY
 
+            - name: SPRING_AI_GOOGLE_GENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ansible-secrets-bundle
+                  key: google-api-key
+
             # JPA Settings
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
