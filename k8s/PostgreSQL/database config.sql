@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS analysis_jobs (
 -- Πίνακας: Terraform Jobs (Τα αποτελέσματα του TF Generator)
 CREATE TABLE IF NOT EXISTS terraform_jobs (
                                               id VARCHAR(255) PRIMARY KEY,
-                                              analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
+                                              analysis_job_id VARCHAR(255) UNIQUE REFERENCES analysis_jobs(job_id),
                                               user_id VARCHAR(255),
                                               status VARCHAR(255),
                                               terraform_zip BYTEA                -- Binary storage για το ZIP
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS terraform_jobs (
 -- Πίνακας: Ansible Jobs (Τα αποτελέσματα του Ansible Generator)
 CREATE TABLE IF NOT EXISTS ansible_jobs (
                                             id VARCHAR(255) PRIMARY KEY,
-                                            analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
+                                            analysis_job_id VARCHAR(255) UNIQUE REFERENCES analysis_jobs(job_id),
                                             user_id VARCHAR(255),
                                             status VARCHAR(255),
                                             ansible_zip BYTEA                 -- Binary storage για το ZIP
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS ansible_jobs (
 -- Πίνακας: Pipeline Jobs (Τα αποτελέσματα του Pipeline Generator)
 CREATE TABLE IF NOT EXISTS pipeline_jobs (
                                              id VARCHAR(255) PRIMARY KEY,
-                                             analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
+                                             analysis_job_id VARCHAR(255) UNIQUE REFERENCES analysis_jobs(job_id),
                                              user_id VARCHAR(255),
                                              status VARCHAR(255),
                                              pipeline_zip BYTEA                 -- Binary storage για το ZIP
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS pipeline_jobs (
 -- Πίνακας: Validator Jobs (Το τελικό Master ZIP)
 CREATE TABLE IF NOT EXISTS validator_jobs (
                                               id VARCHAR(255) PRIMARY KEY,
-                                              analysis_job_id VARCHAR(255) REFERENCES analysis_jobs(job_id),
+                                              analysis_job_id VARCHAR(255) UNIQUE REFERENCES analysis_jobs(job_id),
                                               user_id VARCHAR(255),
                                               status VARCHAR(255),
                                               validated_master_zip BYTEA                   -- Εδώ αποθηκεύεται το τελικό, ελεγμένο ZIP
