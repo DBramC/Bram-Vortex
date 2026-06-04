@@ -40,24 +40,8 @@ spec:
                 port:
                   number: 80
 
-          # --- 3. GENERATORS ---
-          # Ενοποιημένα paths για να πιάνουν /download και /status
-          - path: /terraform
-            pathType: Prefix
-            backend:
-              service:
-                name: terraform-generator-svc
-                port:
-                  number: 80
-          - path: /ansible
-            pathType: Prefix
-            backend:
-              service:
-                name: ansible-generator-svc
-                port:
-                  number: 80
 
-          # --- 4. FRONTEND (CATCH-ALL) ---
+          # --- 3. FRONTEND (CATCH-ALL) ---
           # ΠΡΟΣΟΧΗ: Πρέπει να είναι ΠΑΝΤΑ τελευταίο στη λίστα
           # για να μη "κλέβει" τα αιτήματα που προορίζονται για τα API.
           - path: /
