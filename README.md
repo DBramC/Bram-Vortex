@@ -31,7 +31,7 @@ Bram Vortex doesn't just "guess"; it engineers. The platform utilizes a speciali
 
 * ⚖️ **Architecture Validator (The Guardian)**: The platform’s safety net. Every AI-generated draft is cross-referenced by this service. It validates the code against real-world cloud constraints and security best practices, ensuring that the final package is not only syntactically correct but **production-ready and secure**.
 
-* ⚙️ Execution Service (The Orchestrator): This service completes the loop. Upon receiving an architecture plan, it first generates a bare-bones Terraform skeleton to execute an initial Infracost estimation, providing the user with a pre-deployment cost analysis. Once validated, it triggers the final deployment workflow and executes a GitOps-native commit, pushing the complete infrastructure-as-code and pipeline definitions directly back into the user’s original repository.
+* ⚙️ **Execution Service**: This service completes the loop. Upon receiving an architecture plan, it first generates a bare-bones Terraform skeleton to execute an initial Infracost estimation, providing the user with a pre-deployment cost analysis. Once validated, it triggers the final deployment workflow and after the it finished it executes a GitOps-native commit, pushing the complete infrastructure-as-code and pipeline definitions directly back into the user’s original repository.
 
 ---
 
