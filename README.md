@@ -14,7 +14,7 @@ Designed to bridge the gap between application development and cloud operations,
 🏗️ [Terraform Generator]  
 🛠️ [Ansible Generator]  
 🚀 [Pipeline Generator]  
-⚖️ [Architecture Validator]
+⚖️ [Architecture Validator]   
 ⚙️ [Execution Service]
 
 ---
