@@ -76,6 +76,13 @@ data:
     vault policy write execution-policy - <<EOF
     path "secret/bram_vortex_db/execution" { capabilities = ["read"] }
     EOF
+    
+    vault policy write monitoring-policy - <<EOF
+    path "sys/metrics" { capabilities = ["read"] }
+    path "sys/health" { capabilities = ["read"] }
+    EOF
+    
+    
 
     # 4. KUBERNETES AUTH CONFIGURATION
     vault auth enable kubernetes || true
@@ -128,7 +135,14 @@ data:
         bound_service_account_namespaces=default \
         policies="execution-policy,secret-ssh-policy,jwt-policy" \
         token_ttl=24h
-
+    
+    
+    vault write auth/kubernetes/role/monitoring-role \
+        bound_service_account_names=prometheus-sa \
+        bound_service_account_namespaces=monitoring \
+        policies="monitoring-policy" \
+        token_ttl=1h
+    
     echo "✅ Vault Rebuild Completed Successfully!"
 
 ---
