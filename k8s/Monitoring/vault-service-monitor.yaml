@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: vault-monitor
-  namespace: monitoring
+  namespace: vault
   labels:
     release: monitoring
 spec:
