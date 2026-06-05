@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: spring-monitor
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: bram-vortex-auth # ΑΛΛΑΞΕ ΑΥΤΟ με το πραγματικό label του service σου
+  endpoints:
+    - port: http # Ή το όνομα του port που έχει το service (π.χ. 8080)
+      path: /actuator/prometheus
+      interval: 30s
