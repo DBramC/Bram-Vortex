@@ -33,14 +33,13 @@ DO $$
         END IF;
         -- Δημιουργία χρήστη αποκλειστικά για monitoring
 
-        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'pg_monitor_user') THEN
-        CREATE USER pg_monitor_user WITH PASSWORD 'monitoring_secure_2026';
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'monitor_user') THEN
+        CREATE USER monitor_user WITH PASSWORD 'monitoring_secure_2026';
         END IF;
 END $$;
 
 -- Δικαιώματα για τον exporter (το pg_monitor είναι role της Postgres για πρόσβαση σε metrics)
-GRANT pg_monitor TO pg_monitor_user;
-GRANT CONNECT ON DATABASE vortexdb TO pg_monitor_user;
+GRANT CONNECT ON DATABASE vortexdb TO monitor_user;
 
 -- Βασική σύνδεση στη βάση για όλους
 GRANT CONNECT ON DATABASE vortexdb TO an_user, tf_user, as_user, pp_user, ex_user, av_user;
