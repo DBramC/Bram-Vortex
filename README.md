@@ -14,7 +14,8 @@ Designed to bridge the gap between application development and cloud operations,
 🏗️ [Terraform Generator]  
 🛠️ [Ansible Generator]  
 🚀 [Pipeline Generator]  
-⚖️ [Architecture Validator]
+⚖️ [Architecture Validator]   
+⚙️ [Execution Service]
 
 ---
 
@@ -29,6 +30,8 @@ Bram Vortex doesn't just "guess"; it engineers. The platform utilizes a speciali
 * 🚀 **Pipeline Generator**: The glue of Continuous Delivery. It automatically crafts production-ready **GitHub Actions workflows**. These pipelines bridge the gap between infrastructure and code, automating builds, dockerization, and the final "push" to the newly created environment.
 
 * ⚖️ **Architecture Validator (The Guardian)**: The platform’s safety net. Every AI-generated draft is cross-referenced by this service. It validates the code against real-world cloud constraints and security best practices, ensuring that the final package is not only syntactically correct but **production-ready and secure**.
+
+* ⚙️ **Execution Service**: This service completes the loop. Upon receiving an architecture plan, it first generates a bare-bones Terraform skeleton to execute an initial Infracost estimation, providing the user with a pre-deployment cost analysis. Once validated, it triggers the final deployment workflow and after the it finished it executes a GitOps-native commit, pushing the complete infrastructure-as-code and pipeline definitions directly back into the user’s original repository.
 
 ---
 
@@ -75,6 +78,8 @@ For full details, see the [LICENSE.md](./LICENSE.md) file.
 [Frontend]: https://github.com/DBramC/Bram-Vortex-Frontend
 [Repository Analyzer]: https://github.com/DBramC/Bram-Vortex-Repo-Analyzer
 [Authentication Service]: https://github.com/DBramC/Bram-Vortex-Authentication-SVC
+[Execution Service]: https://github.com/DBramC/Bram-Vortex-Execution
+
 [Terraform Generator]: https://github.com/DBramC/Bram-Vortex-Terraform-Generator
 [Ansible Generator]: https://github.com/DBramC/Bram-Vortex-Ansible-Generator
 [Pipeline Generator]: https://github.com/DBramC/Bram-Vortex-Pipeline-Generator
