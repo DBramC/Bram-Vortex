@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: spring-monitor
+  name: ansible-monitor
   namespace: monitoring
   labels:
     release: monitoring
