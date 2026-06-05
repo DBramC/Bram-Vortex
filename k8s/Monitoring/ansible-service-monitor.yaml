@@ -6,10 +6,13 @@ metadata:
   labels:
     release: monitoring
 spec:
+  namespaceSelector:
+    matchNames:
+      - default
   selector:
     matchLabels:
-      app: bram-vortex-ansible-generator # ΑΛΛΑΞΕ ΑΥΤΟ με το πραγματικό label του service σου
+      app: bram-vortex-ansible-generator
   endpoints:
-    - port: http # Ή το όνομα του port που έχει το service (π.χ. 8080)
+    - port: http
       path: /actuator/prometheus
       interval: 30s

@@ -3,11 +3,14 @@ kind: Service
 metadata:
   name: execution-svc
   namespace: default
+  labels:
+    app: bram-vortex-execution
 spec:
   selector:
     app: bram-vortex-execution
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80       # Port μέσα στο Cluster
       targetPort: 8080 # Port του Spring Boot
   type: ClusterIP

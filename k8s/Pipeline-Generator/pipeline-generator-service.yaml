@@ -3,11 +3,14 @@ kind: Service
 metadata:
   name: pipeline-generator-svc
   namespace: default
+  labels:
+    app: bram-vortex-pipeline-generator
 spec:
   selector:
     app: bram-vortex-pipeline-generator
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80       # Port μέσα στο Cluster
       targetPort: 8080 # Port του Spring Boot
   type: ClusterIP

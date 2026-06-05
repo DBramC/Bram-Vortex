@@ -6,6 +6,9 @@ metadata:
   labels:
     release: monitoring
 spec:
+  namespaceSelector:
+    matchNames:
+      - default
   selector:
     matchLabels:
       app: bram-vortex-architecture-validator # ΑΛΛΑΞΕ ΑΥΤΟ με το πραγματικό label του service σου

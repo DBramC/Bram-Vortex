@@ -3,11 +3,15 @@ kind: Service
 metadata:
   name: bram-vortex-auth-svc # Το όνομα που θα χρησιμοποιείς στο Kong/Postman
   namespace: default
+  labels:
+    app: bram-vortex-auth
 spec:
+
   selector:
     app: bram-vortex-auth
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 8080
   type: ClusterIP
