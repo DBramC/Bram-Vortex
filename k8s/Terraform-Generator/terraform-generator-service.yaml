@@ -4,7 +4,7 @@ metadata:
   name: terraform-generator-svc
   namespace: default
   labels:
-    app: bram-vortex-ansible-generator
+    app: bram-vortex-terraform-generator
 spec:
   selector:
     app: bram-vortex-terraform-generator
