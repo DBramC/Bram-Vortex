@@ -46,7 +46,11 @@ spec:
                 secretKeyRef:
                   name: terraform-secrets-bundle
                   key: google-api-key
-
+            - name: AI_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: terraform-secrets-bundle
+                  key: ai_model
             # JPA Settings
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"

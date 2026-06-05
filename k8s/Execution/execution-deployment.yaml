@@ -44,6 +44,11 @@ spec:
                 secretKeyRef:
                   name: execution-secrets-bundle
                   key: INFRACOST_API_KEY
+            - name: AI_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: execution-secrets-bundle
+                  key: ai_model
 
             - name: SPRING_AI_GOOGLE_GENAI_API_KEY
               valueFrom:

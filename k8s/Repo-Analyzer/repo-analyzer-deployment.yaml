@@ -46,6 +46,11 @@ spec:
                 secretKeyRef:
                   name: analyzer-secrets-bundle
                   key: google-api-key
+            - name: AI_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: analyzer-secrets-bundle
+                  key: ai_model
 
             # JPA Settings
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
