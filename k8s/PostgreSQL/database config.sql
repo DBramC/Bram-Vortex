@@ -40,6 +40,7 @@ END $$;
 
 -- Δικαιώματα για τον exporter (το pg_monitor είναι role της Postgres για πρόσβαση σε metrics)
 GRANT CONNECT ON DATABASE vortexdb TO monitor_user;
+GRANT pg_monitor TO monitor_user;
 
 -- Βασική σύνδεση στη βάση για όλους
 GRANT CONNECT ON DATABASE vortexdb TO an_user, tf_user, as_user, pp_user, ex_user, av_user;
