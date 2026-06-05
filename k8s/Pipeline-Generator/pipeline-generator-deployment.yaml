@@ -19,7 +19,7 @@ spec:
       serviceAccountName: pipeline-sa
       containers:
         - name: pipeline-generator
-          image: christosbramis/bram-vortex-pipeline-generator:fde3f8b8b1f346b1c41beed337588b3bbaffbfb4
+          image: christosbramis/bram-vortex-pipeline-generator:4b0fae868af9809b32936085603a676ad128463f
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
