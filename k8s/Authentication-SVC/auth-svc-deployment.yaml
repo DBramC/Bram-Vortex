@@ -36,11 +36,6 @@ spec:
                 secretKeyRef:
                   name: oauth-k8s-secret
                   key: client-secret
-            - name: AI_MODEL
-              valueFrom:
-                secretKeyRef:
-                  name: oauth-k8s-secret
-                  key: ai_model
           volumeMounts:
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
