@@ -19,7 +19,7 @@ spec:
       serviceAccountName: terraform-sa
       containers:
         - name: terraform-generator
-          image: christosbramis/bram-vortex-terraform-generator:7be3e4a056ca6c95aba67ee826c47af86f988eee
+          image: christosbramis/bram-vortex-terraform-generator:93ffba9409cfaf6af96aa22cbfd7bd92789f3c0e
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
