@@ -19,7 +19,7 @@ spec:
       serviceAccountName: ansible-sa
       containers:
         - name: ansible-generator
-          image: christosbramis/bram-vortex-ansible-generator:7434e04aa144c93ab7052a2277468a2374b03d5a
+          image: christosbramis/bram-vortex-ansible-generator:9d2a8f9f2b8b6ea45c4473e5753f9e33efdf5afa
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
