@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: vault
+      component: server
   endpoints:
     - port: http
       path: /v1/sys/metrics
